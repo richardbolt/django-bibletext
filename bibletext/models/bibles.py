@@ -8,9 +8,9 @@ from fields import VerseField
 
 class Book(models.Model):
     name = models.CharField(max_length=50)
-    testament = models.CharField(max_length=24, choices=(('OT', 'Old Testament'), ('NT', 'New Testament')), default='OT')
+    testament = models.CharField(max_length=2, choices=(('OT', 'Old Testament'), ('NT', 'New Testament')), default='OT')
     abbr = models.CharField(max_length=10)
-    altname = models.CharField(max_length=150, help_text='Alternate (long form) name, eg: "The Gospel according to St John"')
+    altname = models.CharField(max_length=150, blank=True, help_text='Alternate (long form) name, eg: "The Gospel according to St John"')
     
     def __unicode__(self):
         return self.name
@@ -59,7 +59,7 @@ class VerseText(models.Model):
     book = models.ForeignKey(Book)
     chapter = models.PositiveIntegerField(default=1)
     verse = models.PositiveIntegerField(default=1)
-    text = models.CharField(max_length=530, db_index=True)
+    text = models.TextField()
     
     translation = None # Use the translation code (KJV, NKJV etc) here according to what python-bible supports.
     
