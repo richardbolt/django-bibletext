@@ -1,0 +1,6 @@
+<blockquote cite="{{ passage.format }}">
+    {% for verse in verse_list %}
+    <p>{{ verse.text }}</p>
+    {% endfor %}
+    <p> - {{ passage.format }}{% if bible.translation != 'KJV' %} ({{ bible.translation }}){% endif %}</p>
+</blockquote>
