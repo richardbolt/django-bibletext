@@ -1,4 +1,4 @@
-<blockquote cite="{{ verse.book }} {{ verse.chapter }}:{{ verse.verse }}">
+<blockquote class="bibletext-verse" cite="{{ verse.book }} {{ verse.chapter }}:{{ verse.verse }}">
     <p>{{ verse.text }}</p>
-    <p> - {{ verse.book }} {{ verse.chapter }}:{{ verse.verse }}{% if bible.translation != 'KJV' %} ({{ bible.translation }}){% endif %}</p>
+    <p class="bibletext-reference"> - {{ verse.book }} {{ verse.chapter }}:{{ verse.verse }}{% if bible.translation != 'KJV' %} ({{ bible.translation }}){% endif %}</p>
 </blockquote>
