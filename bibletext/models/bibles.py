@@ -2,6 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 import bible # python-bible module. See http://github.com/jasford/python-bible
+
 from fields import VerseField
 
 

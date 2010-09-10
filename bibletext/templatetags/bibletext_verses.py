@@ -3,7 +3,8 @@ from django.utils.safestring import mark_safe
 
 register = template.Library()
 
-from bible import Passage
+from bible import Passage # python-bible module.
+
 from bibletext.models import KJV
 
 

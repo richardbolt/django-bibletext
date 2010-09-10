@@ -2,7 +2,7 @@ from django import forms
 from django.core import exceptions
 from django.db import models
 
-from bible import Verse, RangeError # python-bible
+from bible import Verse, RangeError # python-bible module.
 
 
 class VerseFormField(forms.CharField):

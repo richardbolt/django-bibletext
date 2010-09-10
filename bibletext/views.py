@@ -4,7 +4,7 @@ from django.core.xheaders import populate_xheaders
 from django.core.paginator import Paginator, InvalidPage
 from django.core.exceptions import ObjectDoesNotExist
 
-from bible import Verse, RangeError, book_re # python-bible
+from bible import Verse, RangeError, book_re # python-bible module.
 from bible.data import bible_data
 
 from models import Scripture, Book

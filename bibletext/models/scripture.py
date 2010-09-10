@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.signals import pre_save
 
-import bible
+import bible # python-bible module.
 
 from bibles import Book, VerseText, KJV
 from fields import VerseField
