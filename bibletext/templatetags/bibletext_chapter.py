@@ -2,7 +2,7 @@ from django import template
 from django.db.models import Count
 from django.utils.safestring import mark_safe, SafeUnicode
 
-from bibletext.models import Book, KJV
+from bibletext.models import KJV
 from bibletext.utils import BookError, find_book
 
 
@@ -20,7 +20,8 @@ def chapter(book, chapter=1, bible=KJV):
     @args
         
         ``book``: The :model:`bibletext.Book` to render the chapter from.
-        Note: You can also use an integer book number, or a book name.
+        Note: You can also use an integer book number, or a book name in which case
+        the book will be found from bible.books.
         
         ``chapter``: The integer chapter you wish to render.
         
@@ -35,7 +36,7 @@ def chapter(book, chapter=1, bible=KJV):
     if type(book) is int:
         if book > 0 and book <= 66:
             # 66 Books in the Bible.
-            book = Book.objects.get(pk=book)
+            book = bible.books.objects.get(pk=book)
         else:
             
             # We can't find the given book in the Bible.

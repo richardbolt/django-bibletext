@@ -2,7 +2,7 @@ from django import template
 from django.db.models import Count
 from django.utils.safestring import mark_safe, SafeUnicode
 
-from bibletext.models import Book, KJV
+from bibletext.models import KJV
 from bibletext.utils import BookError, find_book
 
 
@@ -11,7 +11,7 @@ register = template.Library()
 @register.inclusion_tag('bibletext/books.html')
 def books(bible=KJV):
     """
-    Renders all the books from :model:`bibletext.Books`
+    Renders all the books from :model:`bibletext.Book`
     
     Uses :template:`bibletext/books.html` to render the books.
     You override this template.
@@ -27,7 +27,7 @@ def books(bible=KJV):
     
     """
     return {
-        'books' : Book.objects.all(),
+        'books' : bible.books.objects.all(),
     }
 
 @register.inclusion_tag('bibletext/chapters.html')
@@ -55,7 +55,7 @@ def chapters(book, bible=KJV):
     if type(book) is int:
         if book > 0 and book <= 66:
             # 66 Books in the Bible.
-            book = Book.objects.get(pk=book)
+            book = bible.books.objects.get(pk=book)
         else:
             
             # We can't find the given book in the Bible.

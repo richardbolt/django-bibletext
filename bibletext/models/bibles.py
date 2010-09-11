@@ -1,38 +1,53 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 import bible # python-bible module. See http://github.com/jasford/python-bible
 
 from fields import VerseField
 
 
-class Book(models.Model):
+class BookBase(models.Model):
+    """
+    BookBase (Book) model - implement this abstract class for book information in different languages.
+    """
     name = models.CharField(max_length=50)
-    testament = models.CharField(max_length=2, choices=(('OT', 'Old Testament'), ('NT', 'New Testament')), default='OT')
+    testament = models.CharField(max_length=2, choices=(('OT', _('Old Testament')), ('NT', _('New Testament'))), default='OT')
     abbr = models.CharField(max_length=10)
-    altname = models.CharField(max_length=150, blank=True, help_text='Alternate (long form) name, eg: "The Gospel according to St John"')
+    altname = models.CharField(max_length=150, blank=True,
+        help_text=_('Alternate (long form) name, eg: "The Gospel according to St John"'))
     
     def __unicode__(self):
         return self.name
     
+    class Meta:
+        app_label = 'bibletext'
+        abstract = True
+
+
+class Book(BookBase):
+    " Implements the BookBase abstract model for the English language texts. "
     class Meta:
         db_table = 'bibletext_books'
         app_label = 'bibletext'
 
 
 class BiblePassageManager(models.Manager):
+    " NB: verse and passage work with English at present. "
     
     def verse(self, reference):
-        # Takes textual verse information and returns the Verse.
+        " Takes textual verse information and returns the Verse. "
         if self.model.translation and reference[-3] != self.model.translation:
             reference += ' '+self.model.translation
         verse = bible.Verse(reference)
         return self.get_query_set().get(book__pk=verse.book, chapter=verse.chapter, verse=verse.verse)
     
     def passage(self, start_reference, end_reference=None):
-        # Takes textual passage information and returns the Verse(s).
-        # note, you can't just input 'Romans 1:1-2:3',
-        # you'll need to do ('Romans 1:1', 'Romans 2:3') for the time being.
+        """
+        Takes textual passage information and returns the Verse(s).
+        Note: you can't just input 'Romans 1:1-2:3',
+        you'll need to do ('Romans 1:1', 'Romans 2:3') for the time being.
+        """
         if not end_reference: # Probably just a single verse, return a list anyway.
             end_reference = start_reference
         
@@ -53,7 +68,7 @@ class BiblePassageManager(models.Manager):
 
 class VerseText(models.Model):
     """
-    Verse (Bible) model - implement this abstract class for translations/versions.
+    VerseText (Bible) model - implement this abstract class for translations/versions.
     Each record (object) will be a single verse.
     """
     book = models.ForeignKey(Book)
@@ -62,6 +77,7 @@ class VerseText(models.Model):
     text = models.TextField()
     
     translation = None # Use the translation code (KJV, NKJV etc) here according to what python-bible supports.
+    books = Book # If you have a foreign language Bible, create a model that implements BookBase and go from there.
     
     objects = BiblePassageManager()
     
@@ -111,7 +127,7 @@ class VerseText(models.Model):
 
 # Implementation of VerseText
 class KJV(VerseText):
-    "Implements the VerseText abstract model for the Authorized Version (KJV) text."
+    " Implements the VerseText abstract model for the Authorized Version (KJV) text. "
     
     translation = 'KJV'
     

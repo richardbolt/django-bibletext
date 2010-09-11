@@ -22,7 +22,7 @@ Installation
 ------------
 
 * Make sure the dependencies are satisfied and this module is somewhere on your python path.
-* Add `'bibletext'` to your `INSTALLED_APPS` in your `settings.py`.
+* Add `'bibletext'` to your `INSTALLED_APPS` in your **settings.py**.
 * Create your database tables: `python manage.py syncdb`.
 * Install initial data from fixtures: `python manage.py loaddata books.json kjv.json`.
 

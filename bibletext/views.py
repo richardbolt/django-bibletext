@@ -8,7 +8,7 @@ from django.template import loader, RequestContext
 from bible import Verse, RangeError, book_re # python-bible module.
 from bible.data import bible_data
 
-from models import Scripture, Book, KJV
+from models import Scripture, KJV
 from utils import lookup_translation
 
 
@@ -38,7 +38,7 @@ def chapter(request, book_id, chapter, version=KJV, template_name=None,
     else:
         bible = version # Perhaps we were sent a VerseText implementation like the KJV.
     
-    book = Book.objects.get(pk=book_id)
+    book = bible.books.objects.get(pk=book_id)
     
     try:
         verse_list = bible.objects.filter(book__pk=book_id, chapter=chapter)
@@ -87,7 +87,7 @@ def verse(request, book_id, chapter, verse, version=KJV, template_name=None,
     else:
         bible = version # Perhaps we were sent a VerseText implementation like the KJV.
 
-    book = Book.objects.get(pk=book_id)
+    book = bible.books.objects.get(pk=book_id)
     verse = get_object_or_404(bible, book__pk=book_id, chapter=chapter, verse=verse)
 
     if not template_name:

@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from bible import data, book_re # python-bible module.
 
-from models import Book, VerseText, KJV
+from models import VerseText, KJV
 
 
 # Exceptions
@@ -36,8 +36,8 @@ def find_book(book, bible=KJV):
                     found = i + 1
                     break
     try:
-        return Book.objects.get(pk=found)
-    except Book.ObjectDoesNotExist:
+        return bible.books.objects.get(pk=found)
+    except bible.books.ObjectDoesNotExist:
         raise BookError("Could not find that book of the Bible: %d." % book)
 
 
