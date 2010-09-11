@@ -54,14 +54,20 @@ There are template tags to use:
     {% verse 'John 3:16' %} or {% verse 'Jn 3:16' %}
     
 
-
 ### Views and urls ###
 
-Default views and urls for really easy plugging as a simple Bible viewer will be provided soon. 
+The easiest way to include the whole Bible in your website is to add `(r'^bible/', include('bibletext.urls')),` to your **urls.py**.
+
+You may wish to override **templates/bibletext/base.html** and provide some CSS to make it look nice.
+
+Note: Currently only a whole chapter view is included, eg: `KJV/43/3/` gives you John 3 from the KJV.
+
+More default views and urls forthcoming. Default CSS and standalone templates will also be forthcoming.
+
 
 ### Scripture ###
 
-There is a Scripture model (living in `models/scripture.py`) for usage in your own models like so:
+There is a Scripture model (living in **models/scripture.py**) for usage in your own models like so:
     
 **models.py:**
     

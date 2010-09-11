@@ -1,8 +1,10 @@
 from re import error
 
+from django.contrib.contenttypes.models import ContentType
+
 from bible import data, book_re # python-bible module.
 
-from models import Book, KJV
+from models import Book, VerseText, KJV
 
 
 # Exceptions
@@ -37,3 +39,12 @@ def find_book(book, bible=KJV):
         return Book.objects.get(pk=found)
     except Book.ObjectDoesNotExist:
         raise BookError("Could not find that book of the Bible: %d." % book)
+
+
+def lookup_translation(version):
+    " Returns the VerseText implementation based on the translation string ('KJV', 'ASV', etc) "
+    bible_content_types = ContentType.objects.filter(pk__in=VerseText.versions)
+    for bible_content_type in bible_content_types:
+        if bible_content_type.model_class().translation == version:
+            return bible_content_type.model_class()
+    return KJV # Default to the KJV text to keep it simple.

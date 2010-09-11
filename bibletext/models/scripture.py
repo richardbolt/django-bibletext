@@ -9,15 +9,12 @@ from bibles import Book, VerseText, KJV
 from fields import VerseField
 
 
-# Collections of verses for use.
-VerseText.register_version(KJV)
-
 class Scripture(models.Model):
     "Scripture object to display the text of a passage (or verse) of scripture."
     start_verse = VerseField()
     end_verse = VerseField(blank=True, help_text="Leave blank for a single verse.")
     
-    version = models.ForeignKey(ContentType, limit_choices_to={'pk__in': VerseText.versions})
+    version = models.ForeignKey(ContentType, limit_choices_to={'pk__in': VerseText.versions}, related_name='bible_versions')
     
     # For generic relations
     content_type = models.ForeignKey(ContentType)

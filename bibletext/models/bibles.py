@@ -105,3 +105,4 @@ class KJV(VerseText):
         app_label = 'bibletext'
         verbose_name = 'King James (Authorized) Version'
 
+VerseText.register_version(KJV) # Make sure the KJV is available for usage.
