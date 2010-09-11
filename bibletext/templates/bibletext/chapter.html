@@ -1,0 +1,5 @@
+<div class="bibletext-chapter">
+<h4 class="bibletext-reference">{{ book }} {{ chapter }}{% if bible.translation != 'KJV' %} ({{ bible.translation }}){% endif %}</h4>
+{% for verse in verse_list %}
+<p><span class="bibletext-verse-number">{{ verse.verse }}</span> {{ verse.text }}</p>
+{% endfor %}

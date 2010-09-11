@@ -2,12 +2,11 @@ from django import template
 from django.db.models import Count
 from django.utils.safestring import mark_safe, SafeUnicode
 
-register = template.Library()
-
-from bible import Passage, data, book_re # python-bible module.
-
 from bibletext.models import Book, KJV
+from bibletext.utils import BookError, find_book
 
+
+register = template.Library()
 
 @register.inclusion_tag('bibletext/books.html')
 def books(bible=KJV):
@@ -34,7 +33,7 @@ def books(bible=KJV):
 @register.inclusion_tag('bibletext/chapters.html')
 def chapters(book, bible=KJV):
     """
-    Renders all the chpaters from the given :model:`bibletext.Book`
+    Renders all the chapters from the given :model:`bibletext.Book`
     in the given Bible.
     
     Uses :template:`bibletext/chapters.html` to render the chapter numbers.
@@ -50,7 +49,7 @@ def chapters(book, bible=KJV):
     
     Usage::
         
-        {% chapters MyBook %}, {% chapters 1, MyTranslation %}, {% chapters "Genesis", MyTranslation %}
+        {% chapters MyBook %}, {% chapters 1, MyTranslation %}, {% chapters 'Genesis', MyTranslation %}
     
     """
     if type(book) is int:
@@ -68,22 +67,8 @@ def chapters(book, bible=KJV):
     elif type(book) in (SafeUnicode, str, unicode):
         # find the book reference
         try:
-            # Does the text look like a book reference?
-            b = book_re.search(book).group(0)        
-            # Try to find the book listed as a book name or abbreviation
-            bible_data = data.bible_data(bible.translation)
-            b = b.rstrip('.').lower().strip()
-            for i, book_data in enumerate(bible_data):
-                if book_data['name'].lower() == b:
-                    found = i + 1
-                    break
-                else:
-                    for abbr in book_data['abbrs']:
-                        if abbr == b:
-                            found = i + 1
-                            break
-            book = Book.objects.get(pk=found)
-        except:
+            book = find_book(book, bible)
+        except BookError:
             
             # We can't find the given book in the Bible.
             return {

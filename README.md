@@ -23,6 +23,7 @@ Installation
 
 * Make sure the dependencies are satisfied and this module is somewhere on your python path.
 * Add `'bibletext'` to your `INSTALLED_APPS` in your `settings.py`.
+* Create your database tables: `python manage.py syncdb`.
 * Install initial data from fixtures: `python manage.py loaddata books.json kjv.json`.
 
 Usage
@@ -32,7 +33,7 @@ Usage
 
 There are template tags to use:
 
-    {% load bibletext_books bibletest_verses %}
+    {% load bibletext_books bibletest_verses bibletext_chapter %}
     
     All the books of the bible, listed:
     {% books %} or {% books MyTranslation %}
@@ -40,11 +41,19 @@ There are template tags to use:
     All the chapters and verse counts from John listed:
     {% chapters 'John' %}
     
-    A specific verse (John 3:16):
-    {% verse 'John 3:16' %} or {% verse 'Jn 3:16' %}
+    The text of John 3 (the whole chapter):
+    {% chapter 'John' 3 %}
+    
+    The text of 3 John (the whole book since chapter defaults to 1, and there is only one chapter):
+    {% chapter '3 John' %}
     
     A passage (John 3:16 - 3:18):
     {% passage 'John 3:16 - 3:18' %} or {% passage 'Jn 3:16 - 3:18' %}
+    
+    A specific verse (John 3:16):
+    {% verse 'John 3:16' %} or {% verse 'Jn 3:16' %}
+    
+
 
 ### Views and urls ###
 
@@ -54,7 +63,7 @@ Default views and urls for really easy plugging as a simple Bible viewer will be
 
 There is a Scripture model (living in `models/scripture.py`) for usage in your own models like so:
     
-`models.py`:
+**models.py:**
     
     from bibletext.models import Scripture
     
@@ -67,7 +76,7 @@ There is a Scripture model (living in `models/scripture.py`) for usage in your o
     
         scripture = generic.GenericRelation(Scripture) # optional, but provides additional APIs.
 
-`admin.py`:
+**admin.py:**
     
     from bibletext.admin import ScriptureInline
 

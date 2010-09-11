@@ -1,12 +1,12 @@
 from django import template
 from django.utils.safestring import mark_safe
 
-register = template.Library()
-
 from bible import Passage # python-bible module.
 
 from bibletext.models import KJV
 
+
+register = template.Library()
 
 @register.inclusion_tag('bibletext/verse.html')
 def verse(reference, bible=KJV):
