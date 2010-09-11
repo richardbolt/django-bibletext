@@ -1,0 +1,11 @@
+{% extends "bibletext/base.html" %}
+
+{% block content %}
+
+<div class="bibletext-chapter">
+<h4 class="bibletext-reference">{{ book }} <a href="{{ verse.get_chapter_url }}">{{ chapter }}</a>:{{ verse.verse }}{% if bible.translation != 'KJV' %} ({{ bible.translation }}){% endif %}</h4>
+{% include "bibletext/_verse.html" %}
+
+</div>
+
+{% endblock %}

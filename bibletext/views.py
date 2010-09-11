@@ -2,6 +2,7 @@ from django.core.xheaders import populate_xheaders
 from django.core.paginator import Paginator, InvalidPage
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponse
+from django.shortcuts import get_object_or_404
 from django.template import loader, RequestContext
 
 from bible import Verse, RangeError, book_re # python-bible module.
@@ -11,7 +12,7 @@ from models import Scripture, Book, KJV
 from utils import lookup_translation
 
 
-def chapter(request, book_id, chapter, version=KJV, template_name=None, template_name_field=None,
+def chapter(request, book_id, chapter, version=KJV, template_name=None,
         template_loader=loader, extra_context=None, context_processors=None,
         template_object_name='verse_list', mimetype=None):
     """
@@ -23,7 +24,8 @@ def chapter(request, book_id, chapter, version=KJV, template_name=None, template
         
         `chapter`: (int) The chapter to render.
         
-        `bible`: The Bible version to be used.
+        `version`: The Bible version to be used. You can use either the actual object or a string
+        representing the translation attribute (eg: KJV or 'KJV')
     
     """
     if extra_context is None: extra_context = {}
@@ -45,11 +47,7 @@ def chapter(request, book_id, chapter, version=KJV, template_name=None, template
     
     if not template_name:
         template_name = "bibletext/chapter_detail.html"
-    if template_name_field:
-        template_name_list = [getattr(obj, template_name_field), template_name]
-        t = template_loader.select_template(template_name_list)
-    else:
-        t = template_loader.get_template(template_name)
+    t = template_loader.get_template(template_name)
     c = RequestContext(request, {
         template_object_name: verse_list,
         'book': book,
@@ -64,6 +62,49 @@ def chapter(request, book_id, chapter, version=KJV, template_name=None, template
     return HttpResponse(t.render(c), mimetype=mimetype)
 
 
+def verse(request, book_id, chapter, verse, version=KJV, template_name=None,
+        template_loader=loader, extra_context=None, context_processors=None,
+        template_object_name='verse', mimetype=None):
+    """
+    Renders a single verse based on the given book, chapter, and verse.
+
+    @args::
+
+        `book_id`: (int) Pk of the Book to be used.
+
+        `chapter`: (int) The chapter to render.
+
+        `version`: The Bible version to be used.
+
+    """
+    if extra_context is None: extra_context = {}
+
+    if not book_id and chapter:
+        raise AttributeError("Chapter detail view must be called with a book_id and a chapter.")
+
+    if type(version) in (str, unicode):
+        bible = lookup_translation(version)
+    else:
+        bible = version # Perhaps we were sent a VerseText implementation like the KJV.
+
+    book = Book.objects.get(pk=book_id)
+    verse = get_object_or_404(bible, book__pk=book_id, chapter=chapter, verse=verse)
+
+    if not template_name:
+        template_name = "bibletext/verse_detail.html"
+    t = template_loader.get_template(template_name)
+    c = RequestContext(request, {
+        template_object_name: verse,
+        'book': book,
+        'chapter': chapter,
+        'bible': bible,
+    }, context_processors)
+    for key, value in extra_context.items():
+        if callable(value):
+            c[key] = value()
+        else:
+            c[key] = value
+    return HttpResponse(t.render(c), mimetype=mimetype)
 
 
 

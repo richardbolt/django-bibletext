@@ -93,6 +93,21 @@ class VerseText(models.Model):
             if version_content_type.pk not in cls.versions:
                 cls.versions.append(version_content_type.pk)
     
+    @models.permalink
+    def get_absolute_url(self):
+        return ('bibletext_verse_detail', (), {
+            'version':self.translation,
+            'book_id': self.book.pk,
+            'chapter': self.chapter,
+            'verse': self.verse})
+    
+    @models.permalink
+    def get_chapter_url(self):
+        return ('bibletext_chapter_detail', (), {
+            'version':self.translation,
+            'book_id': self.book.pk,
+            'chapter': self.chapter})
+
 
 # Implementation of VerseText
 class KJV(VerseText):

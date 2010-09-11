@@ -60,7 +60,9 @@ The easiest way to include the whole Bible in your website is to add `(r'^bible/
 
 You may wish to override **templates/bibletext/base.html** and provide some CSS to make it look nice.
 
-Note: Currently only a whole chapter view is included, eg: `KJV/43/3/` gives you John 3 from the KJV.
+Note: Currently only the whole chapter view and a verse view are included,
+eg: `KJV/43/3/` gives you John 3 from the KJV,
+`KJV/43/3/16/` gives you John 3:16 from the KJV.
 
 More default views and urls forthcoming. Default CSS and standalone templates will also be forthcoming.
 
