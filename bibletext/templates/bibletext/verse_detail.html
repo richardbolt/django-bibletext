@@ -6,6 +6,10 @@
 <h4 class="bibletext-reference">{{ book }} <a href="{{ verse.get_chapter_url }}">{{ chapter }}</a>:{{ verse.verse }}{% if bible.translation != 'KJV' %} ({{ bible.translation }}){% endif %}</h4>
 {% include "bibletext/_verse.html" %}
 
+<p class="bibletext-next-prev">
+{% if verse.prev_verse %}<a class="bibletext-prev" href="{{ verse.prev_verse.get_absolute_url }}">&laquo; {{ verse.prev_verse }}</a>{% endif %}
+{% if verse.next_verse %}<a class="bibletext-next" href="{{ verse.next_verse.get_absolute_url }}">{{ verse.next_verse }} &raquo;</a>{% endif %}
+</p>
 </div>
 
 {% endblock %}

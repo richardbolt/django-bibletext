@@ -129,16 +129,24 @@ class VerseText(models.Model):
     
     @property
     def next_verse(self):
+        if hasattr(self, '_next_verse'):
+            return self._next_verse
         try:
-            return self.__class__.objects.get(pk=self.pk+1)
+            self._next_verse = self.__class__.objects.get(pk=self.pk+1)
+            return self._next_verse
         except self.__class__.DoesNotExist:
-            return None
+            self._next_verse = None
+            return self._next_verse
     
     @property
     def prev_verse(self):
+        if hasattr(self, '_prev_verse'):
+            return self._prev_verse
         if self.book_id == 1 and self.chapter == 1 and self.verse == 1:
-            return None # Genesis 1:1 has no previous verse.
-        return self.__class__.objects.get(pk=self.pk-1)
+            self._prev_verse = None # Genesis 1:1 has no previous verse.
+            return self._prev_verse
+        self._prev_verse = self.__class__.objects.get(pk=self.pk-1)
+        return self._prev_verse
     
     #---------------------
     # Next/Previous Books
