@@ -123,6 +123,51 @@ class VerseText(models.Model):
             'version':self.translation,
             'book_id': self.book.pk,
             'chapter': self.chapter})
+    
+    #---------------------
+    # Next/Previous Verses
+    
+    @property
+    def next_verse(self):
+        try:
+            return self.__class__.objects.get(pk=self.pk+1)
+        except self.__class__.DoesNotExist:
+            return None
+    
+    @property
+    def prev_verse(self):
+        if self.book_id == 1 and self.chapter == 1 and self.verse == 1:
+            return None # Genesis 1:1 has no previous verse.
+        return self.__class__.objects.get(pk=self.pk-1)
+    
+    #---------------------
+    # Next/Previous Books
+    
+    @property
+    def next_book_pk(self):
+        next_book_pk = self.book_id + 1
+        if next_book_pk <= 66:
+            return next_book_pk
+        return None
+    
+    @property
+    def prev_book_pk(self):
+        prev_book_pk = self.book_id - 1
+        if prev_book_pk > 0:
+            return prev_book_pk
+        return None
+    
+    @property
+    def next_book(self):
+        if self.next_book_pk:
+            return self.books.objects.get(pk=self.next_book_pk)
+        return None
+    
+    @property
+    def prev_book(self):
+        if self.prev_book_pk:
+            return self.books.objects.get(pk=self.prev_book_pk)
+        return None
 
 
 # Implementation of VerseText
