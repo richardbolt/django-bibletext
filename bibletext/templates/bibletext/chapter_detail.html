@@ -7,6 +7,11 @@
 {% for verse in verse_list %}
 {% include "bibletext/_verse.html" %}
 {% endfor %}
+
+<p class="bibletext-next-prev">
+{% if verse_list.0.prev_chapter %}<a href="{{ verse_list.0.prev_chapter.get_chapter_url }}">&laquo; {{ verse_list.0.prev_chapter.book }} {{ verse_list.0.prev_chapter.chapter }}</a>{% endif %}
+{% if verse_list.0.next_chapter %}<a href="{{ verse_list.0.next_chapter.get_chapter_url }}">{{ verse_list.0.next_chapter.book }} {{ verse_list.0.next_chapter.chapter }} &raquo;</a>{% endif %}
+</p>
 </div>
 
 {% endblock %}

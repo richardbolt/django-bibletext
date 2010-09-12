@@ -148,6 +148,48 @@ class VerseText(models.Model):
         self._prev_verse = self.__class__.objects.get(pk=self.pk-1)
         return self._prev_verse
     
+    #-----------------------
+    # Next/Previous Chapters
+    
+    @property
+    def next_chapter(self):
+        if hasattr(self, '_next_chapter'):
+            return self._next_chapter
+        if self.book_id == 66 and self.chapter == 22: # Nothing after Revelation 22...
+            return None
+        
+        book_data = bible.data.bible_data(self.translation)[self.book_id-1] # NB: data is 0 indexed.
+        
+        try:
+            book_data['verse_counts'][self.chapter] # Next chapter in the given book...
+            self._next_chapter = self.__class__.objects.get(book__pk=self.book_id, chapter=self.chapter + 1, verse=1)
+        except IndexError:
+            # We'll be in the next book.
+            self._next_chapter = self.__class__.objects.get(book__pk=self.next_book_pk, chapter=1, verse=1)
+        
+        return self._next_chapter
+    
+    @property
+    def prev_chapter(self):
+        if hasattr(self, '_prev_chapter'):
+            return self._prev_chapter
+        if self.book_id == 1 and self.chapter == 1: # Nothing before Genesis 1...
+            return None
+        
+        book_data = bible.data.bible_data(self.translation)[self.book_id-1] # NB: data is 0 indexed.
+        
+        if self.chapter-2 < 0: # We'll be in the previous book.
+            chapter = len(bible.data.bible_data(self.translation)[self.book_id-2]['verse_counts'])
+            self._prev_chapter = self.__class__.objects.get(book__pk=self.prev_book_pk, chapter=chapter, verse=1)
+        else:
+            book_data['verse_counts'][self.chapter-2] # Previous chapter in the given book...
+            self._prev_chapter = self.__class__.objects.get(book__pk=self.book_id, chapter=self.chapter - 1, verse=1)
+        
+        return self._prev_chapter
+        
+        
+        
+    
     #---------------------
     # Next/Previous Books
     
