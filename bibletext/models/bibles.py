@@ -23,6 +23,12 @@ class BibleBase(object):
     def __ne__(self, other):
         return not self.__eq__(other)
     
+    def __le__(self, other):
+        if (self.__lt__(other) or self.__eq__(other)):
+            return True
+
+        return False
+    
     def __gt__(self, other):
         return not self.__le__()
 
@@ -64,7 +70,7 @@ class Bible(BibleBase):
         """
         book_num = 1
         for data in book_data:
-            self._books.append(Book(self, book=book_num, **data))
+            self._books.append(Book(self, number=book_num, **data))
             book_num += 1
 
     @property
@@ -125,7 +131,7 @@ class Bible(BibleBase):
 
 class Book(BibleBase):
     " Book object. Represents a book of the Bible. "
-    def __init__(self, bible=None, testament=None, book=None, name=None, abbreviations=None, verse_counts=None,
+    def __init__(self, bible=None, testament=None, number=None, name=None, abbreviations=None, verse_counts=None,
                 omissions=None, altname=None, chapter_text=None):
         """
         Book __init__.
@@ -136,7 +142,7 @@ class Book(BibleBase):
 
             `testament`: NT or OT.
 
-            `book`: (int) Book number (starting from 1).
+            `number`: (int) Book number (starting from 1).
 
             `name`: The name of the book.
 
@@ -151,7 +157,7 @@ class Book(BibleBase):
         """
         self.bible = bible
         self.textament = testament
-        self.book = book # int(book)
+        self.number = number # int(book number)
         self.name = name
         self.abbreviations = abbreviations
         self._chapters = []
@@ -209,20 +215,14 @@ class Book(BibleBase):
 
     def __eq__(self, other):
         if type(self) == type(other):
-            return (self.bible, self.book) == (other.bible, other.book)
+            return (self.bible, self.number) == (other.bible, other.number)
 
         return False
 
     def __lt__(self, other):
         if type(self) == type(other):
-            if self.bible == other.bible:
-                return self.book < other.book
-
-        return False
-
-    def __le__(self, other):
-        if (self.__lt__(other) or self.__eq__(other)):
-            return True
+            if self.number == other.number:
+                return self.number < other.number
 
         return False
 
@@ -234,22 +234,24 @@ class Chapter(BibleBase):
     @args::
         `book`: :models:`bibletext.Book` that this chapter belongs to.
 
-        `chapter`: int chapter.
+        `number`: int chapter number.
 
         `verses`: List of the verse numbers present in this Chapter.
 
         `chapter_text`: Defaults to `_('Chapter %d')`, and `_('Psalm %d')` for Psalms.
 
     """
-    def __init__(self, book, chapter, verses, omissions=None, chapter_text=None):
-        if not chapter_text:
-            if book.book == 19: # Psalms are Psalms, not Chapters.
-                chapter_text = _('Psalm %d')
-            else:
-                chapter_text = _('Chapter %d')
+    def __init__(self, book, number, verses, omissions=None, chapter_text=None):
+        
         self.book = book # Needs to know the book we're in for comparators to operate.
-        self.chapter = chapter # int(chapter)
-        self.name = chapter_text % self.chapter
+        self.number = number # int(chapter number)
+        if chapter_text:
+            self.chapter_text = chapter_text
+        elif self.book.number == 19: # Psalms are Psalms, not Chapters.
+            self.chapter_text = _('Psalm %d')
+        else:
+            self.chapter_text = _('Chapter %d')
+        self.name = self.chapter_text % self.number
         self._verses = []
         for verse in verses:
             self._verses.append(Verse(self, verse)) # NB: verse is the Verse number.
@@ -259,7 +261,7 @@ class Chapter(BibleBase):
         if len(self.book) == 1: # Only one chapter to the book, omit the chapter.
             return self.book
 
-        return u'%s %s' % (self.book, self.chapter)
+        return u'%s %s' % (self.book, self.number)
 
     def __len__(self):
         " Return the number of verses. "
@@ -293,14 +295,14 @@ class Chapter(BibleBase):
 
     def __eq__(self, other):
         if type(self) == type(other):
-            return (self.book, self.chapter) == (other.book, other.chapter)
+            return (self.book, self.number) == (other.book, other.number)
 
         return False
 
     def __lt__(self, other):
         if type(self) == type(other):
             if self.bible == other.bible:
-                if self.book < other.book or (self.book == other.book and self.chapter < other.chapter):
+                if self.book < other.book or (self.book == other.book and self.number < other.number):
                     return True
 
         return False
@@ -322,23 +324,23 @@ class Verse(BibleBase):
 
         `chapter`: The chapter object that this Verse belongs to.
 
-        `verse`: int verse.
+        `number`: int verse number.
 
     """
-    def __init__(self, chapter, verse):
+    def __init__(self, chapter, number):
         self.chapter = chapter
-        self.verse = verse
+        self.number = number
         if len(self.chapter.book) > 1:
-            self.name = u'%s:%s' % (self.chapter.chapter, self.verse)
+            self.name = u'%s:%s' % (self.chapter.number, self.number)
         else: # Books with one chapter.
-            self.name = unicode(self.verse)
+            self.name = unicode(self.number)
     
     def __unicode__(self):
         return u'%s %s' % (self.chapter.book, self.name)
     
     def __eq__(self, other):
         if type(self) == type(other):
-            return (self.chapter, self.verse) == (other.chapter, other.verse)
+            return (self.chapter, self.number) == (other.chapter, other.number)
 
         return False
     
@@ -347,14 +349,8 @@ class Verse(BibleBase):
             if self.bible == other.bible:
                 if self.book < other.book or self.chapter < other.chapter or \
                         (self.book == other.book and self.chapter == other.chapter and
-                                    self.verse < other.verse):
+                                    self.number < other.number):
                     return True
-
-        return False
-
-    def __le__(self, other):
-        if (self.__lt__(other) or self.__eq__(other)):
-            return True
 
         return False
 
@@ -367,7 +363,7 @@ class BiblePassageManager(models.Manager):
         if self.model.translation and reference[-3] != self.model.translation:
             reference += ' '+self.model.translation
         verse = bible.Verse(reference)
-        return self.get_query_set().get(book__pk=verse.book, chapter=verse.chapter, verse=verse.verse)
+        return self.get_query_set().get(book_id=verse.book.number, chapter_id=verse.chapter.number, verse_id=verse.number)
     
     def passage(self, start_reference, end_reference=None):
         """
@@ -398,9 +394,6 @@ class VerseText(models.Model):
     VerseText (Bible) model - implement this abstract class for translations/versions.
     Each record (object) will be a single verse.
     """
-    #book = models.ForeignKey(Book)
-    #chapter = models.PositiveIntegerField(default=1)
-    #verse = models.PositiveIntegerField(default=1)
     book_id = models.PositiveIntegerField(default=1)
     chapter_id = models.PositiveIntegerField(default=1)
     verse_id = models.PositiveIntegerField(default=1)
@@ -413,11 +406,11 @@ class VerseText(models.Model):
     objects = BiblePassageManager()
     
     def __unicode__(self):
-        return u'%s %s:%s' % (self.book, self.chapter.chapter, self.verse.verse)    
+        return u'%s %s:%s' % (self.book, self.chapter.number, self.verse.number)    
     
     class Meta:
-        ordering = ('id') # ('book__id', 'chapter', 'verse')
-        unique_together = [('book', 'chapter', 'verse')]
+        ordering = ('id') # Should already be: ('book_id', 'chapter_id', 'verse_id')
+        unique_together = [('book_id', 'chapter_id', 'verse_id')]
         app_label = 'bibletext'
         abstract = True
     
@@ -456,7 +449,7 @@ class VerseText(models.Model):
     def get_absolute_url(self):
         return ('bibletext_verse_detail', (), {
             'version':self.translation,
-            'book_id': self.book.pk,
+            'book_id': self.book.number,
             'chapter': self.chapter,
             'verse': self.verse})
     
@@ -464,7 +457,7 @@ class VerseText(models.Model):
     def get_chapter_url(self):
         return ('bibletext_chapter_detail', (), {
             'version':self.translation,
-            'book_id': self.book.pk,
+            'book_id': self.book.number,
             'chapter': self.chapter})
     
     #---------------------
@@ -485,7 +478,7 @@ class VerseText(models.Model):
     def prev_verse(self):
         if hasattr(self, '_prev_verse'):
             return self._prev_verse
-        if self.book_id == 1 and self.chapter == 1 and self.verse == 1:
+        if self.book_id == 1 and self.chapter_id == 1 and self.verse_id == 1:
             self._prev_verse = None # Genesis 1:1 has no previous verse.
             return self._prev_verse
         self._prev_verse = self.__class__.objects.get(pk=self.pk-1)
@@ -498,17 +491,15 @@ class VerseText(models.Model):
     def next_chapter(self):
         if hasattr(self, '_next_chapter'):
             return self._next_chapter
-        if self.book_id == 66 and self.chapter == 22: # Nothing after Revelation 22...
+        if self.book_id == 66 and self.chapter_id == 22: # Nothing after Revelation 22...
             return None
-        
-        book_data = bible.data.bible_data(self.translation)[self.book_id-1] # NB: data is 0 indexed.
-        
+                
         try:
-            book_data['verse_counts'][self.chapter] # Next chapter in the given book...
-            self._next_chapter = self.__class__.objects.get(book__pk=self.book_id, chapter=self.chapter + 1, verse=1)
+            self.book[self.chapter.number + 1] # Next chapter in the same book...
+            self._next_chapter = self.__class__.objects.get(book_id=self.book_id, chapter_id=self.chapter_id + 1, verse_id=1)
         except IndexError:
             # We'll be in the next book.
-            self._next_chapter = self.__class__.objects.get(book__pk=self.next_book_pk, chapter=1, verse=1)
+            self._next_chapter = self.__class__.objects.get(book_id=self.next_book_pk, chapter_id=1, verse_id=1)
         
         return self._next_chapter
     
@@ -516,17 +507,17 @@ class VerseText(models.Model):
     def prev_chapter(self):
         if hasattr(self, '_prev_chapter'):
             return self._prev_chapter
-        if self.book_id == 1 and self.chapter == 1: # Nothing before Genesis 1...
+        if self.book_id == 1 and self.chapter_id == 1: # Nothing before Genesis 1...
             return None
         
         book_data = bible.data.bible_data(self.translation)[self.book_id-1] # NB: data is 0 indexed.
         
-        if self.chapter-2 < 0: # We'll be in the previous book.
-            chapter = len(bible.data.bible_data(self.translation)[self.book_id-2]['verse_counts'])
-            self._prev_chapter = self.__class__.objects.get(book__pk=self.prev_book_pk, chapter=chapter, verse=1)
+        if self.chapter_id - 1 <= 0: # We'll be in the previous book.
+            chapter_id = self.bible[self.book-1][-1].number
+            self._prev_chapter = self.__class__.objects.get(book_id=self.prev_book_pk, chapter_id=chapter_id, verse_id=1)
         else:
-            book_data['verse_counts'][self.chapter-2] # Previous chapter in the given book...
-            self._prev_chapter = self.__class__.objects.get(book__pk=self.book_id, chapter=self.chapter - 1, verse=1)
+            self.book[self.chapter-1] # Previous chapter in the same book...
+            self._prev_chapter = self.__class__.objects.get(book_id=self.book_id, chapter=self.chapter_id - 1, verse_id=1)
         
         return self._prev_chapter
     
@@ -550,12 +541,12 @@ class VerseText(models.Model):
     @property
     def next_book(self):
         if self.next_book_pk:
-            return self.books.objects.get(pk=self.next_book_pk)
+            return self.bible[self.next_book_pk]
         return None
     
     @property
     def prev_book(self):
         if self.prev_book_pk:
-            return self.books.objects.get(pk=self.prev_book_pk)
+            return self.bible[self.prev_book_pk]
         return None
 

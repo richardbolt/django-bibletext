@@ -38,6 +38,9 @@ def chapter(request, book_id, chapter_id, version=KJV, template_name=None,
     else:
         bible = version # Perhaps we were sent a VerseText implementation like the KJV.
     
+    book_id = int(book_id)
+    chapter_id = int(chapter_id)
+    
     try:
         chapter = bible.bible[book_id][chapter_id]
         verse_list = bible.objects.filter(book_id=book_id, chapter_id=chapter_id)
@@ -86,7 +89,7 @@ def verse(request, book_id, chapter_id, verse_id, version=KJV, template_name=Non
     else:
         bible = version # Perhaps we were sent a VerseText implementation like the KJV.
     
-    verse = get_object_or_404(bible, book_id=book_id, chapter_id=chapter, verse_id=verse)
+    verse = get_object_or_404(bible, book_id=book_id, chapter_id=chapter_id, verse_id=verse_id)
 
     if not template_name:
         template_name = "bibletext/verse_detail.html"
