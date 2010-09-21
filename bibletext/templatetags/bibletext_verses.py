@@ -35,7 +35,7 @@ def verse(reference, bible=KJV):
     }
 
 @register.inclusion_tag('bibletext/passage.html')
-def passage(start_reference, end_reference, bible=KJV):
+def passage(start_reference, end_reference=None, bible=KJV):
     """
     Renders a passage from :model:`bibletext.KJV` (or another ``bible``)
     
@@ -46,7 +46,8 @@ def passage(start_reference, end_reference, bible=KJV):
         
         ``start_reference``: The textual scripture reference to start from. eg: 'Jn 3:16'
         
-        ``end_reference``: The textual scripture reference to end with. eg: 'Jn 3:18'
+        ``end_reference``: The textual scripture reference to end with. eg: 'Jn 3:18'.
+        Can be None if you don't know whether it will be a passage or a verse.
         
         ``bible``: The model object of the translation you want to quote from.
         Defaults to the :model:`bibletext.KJV` text.
@@ -55,6 +56,8 @@ def passage(start_reference, end_reference, bible=KJV):
         
         {% passage 'John 3:16' 'John 3:18' %}, {% passage 'John 3:16' 'John 3:18' MyTranslation %}
     """
+    if end_reference == None:
+        end_reference = start_reference
     verse_list = bible.objects.passage(start_reference, end_reference)
     passage = Passage(start_reference, end_reference) # Call {{ passage.format }} for the scripture reference.
     

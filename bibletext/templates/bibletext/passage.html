@@ -1,6 +1,7 @@
 <blockquote class="bibletext-passage" cite="{{ passage.format }}">
     {% for verse in verse_list %}
-    <p><span class="bibletext-verse-number">{{ verse.verse }}</span> {{ verse.text }}</p>
+    <p><span class="bibletext-verse-number">{% if verse.get_absolute_url %}<a href="{{ verse.get_absolute_url }}">{{ verse.verse }}</a>{% else %}{{ verse.verse }}{% endif %}</span>
+    {{ verse.text }}</p>
     {% endfor %}
     <p class="bibletext-reference"> - {{ passage.format }}{% if bible.translation != 'KJV' %} ({{ bible.translation }}){% endif %}</p>
 </blockquote>
