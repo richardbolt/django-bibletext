@@ -11,6 +11,9 @@ from fields import VerseField
 class BibleBase(object):
     " Base class from which Bible, Book, and Verse implement. "
     
+    def __repr__(self):
+        return u'<%s: %s>' % (self.__class__.__name__, self.__str__())
+    
     def __str__(self):
         if hasattr(self, '__unicode__'):
             return force_unicode(self).encode('utf-8')
@@ -212,7 +215,23 @@ class Book(BibleBase):
              return self._chapters[key]
          else:
              raise IndexError
-
+    
+    @property
+    def next(self):
+        " Next book. "
+        if self.number < 66:
+            return self.bible[self.number+1]
+        
+        return None
+    
+    @property
+    def prev(self):
+        " Previous book. "
+        if self.number > 1:
+            return self.bible[self.number-1]
+        
+        return None
+    
     def __eq__(self, other):
         if type(self) == type(other):
             return (self.bible, self.number) == (other.bible, other.number)
@@ -259,7 +278,7 @@ class Chapter(BibleBase):
 
     def __unicode__(self):
         if len(self.book) == 1: # Only one chapter to the book, omit the chapter.
-            return self.book
+            return self.book.__unicode__()
 
         return u'%s %s' % (self.book, self.number)
 
@@ -292,7 +311,23 @@ class Chapter(BibleBase):
              return self._verses[key]
          else:
              raise IndexError
-
+    
+    @property
+    def next(self):
+        " Next chapter (can be from a different book). "
+        if self.number < len(self.book):
+            return self.book[self.number+1]
+        else: # Next book, chapter 1.
+            return self.book.next[1]
+    
+    @property
+    def prev(self):
+        " Previous chapter (can be from a different book). "
+        if self.number > 1:
+            return self.book[self.number-1]
+        else: # Previous book, last chapter.
+            return self.book.prev[-1]
+    
     def __eq__(self, other):
         if type(self) == type(other):
             return (self.book, self.number) == (other.book, other.number)
@@ -435,14 +470,17 @@ class VerseText(models.Model):
     
     @property
     def book(self):
+        " Book object. "
         return self.bible[self.book_id]
     
     @property
     def chapter(self):
+        " Chapter object. "
         return self.book[self.chapter_id]
     
     @property
     def verse(self):
+        " Verse object. "
         return self.chapter[self.verse_id]
     
     @models.permalink
@@ -489,62 +527,24 @@ class VerseText(models.Model):
     
     @property
     def next_chapter(self):
-        if hasattr(self, '_next_chapter'):
-            return self._next_chapter
-        if self.book_id == 66 and self.chapter_id == 22: # Nothing after Revelation 22...
-            return None
-                
-        try:
-            self.book[self.chapter.number + 1] # Next chapter in the same book...
-            self._next_chapter = self.__class__.objects.get(book_id=self.book_id, chapter_id=self.chapter_id + 1, verse_id=1)
-        except IndexError:
-            # We'll be in the next book.
-            self._next_chapter = self.__class__.objects.get(book_id=self.next_book_pk, chapter_id=1, verse_id=1)
-        
-        return self._next_chapter
+        " Returns a Chapter object or None. "
+        return self.chapter.next
     
     @property
     def prev_chapter(self):
-        if hasattr(self, '_prev_chapter'):
-            return self._prev_chapter
-        if self.book_id == 1 and self.chapter_id == 1: # Nothing before Genesis 1...
-            return None
-                
-        if self.chapter_id - 1 <= 0: # We'll be in the previous book.
-            chapter_id = len(self.bible[self.book-1][-1])
-            self._prev_chapter = self.__class__.objects.get(book_id=self.prev_book_pk, chapter_id=chapter_id, verse_id=1)
-        else:
-            self.book[self.chapter-1] # Previous chapter in the same book...
-            self._prev_chapter = self.__class__.objects.get(book_id=self.book_id, chapter=self.chapter_id - 1, verse_id=1)
-        
-        return self._prev_chapter
+        " Returns a Chapter object or None. "
+        return self.chapter.prev
     
     #---------------------
     # Next/Previous Books
     
     @property
-    def next_book_pk(self):
-        next_book_pk = self.book_id + 1
-        if next_book_pk <= 66:
-            return next_book_pk
-        return None
-    
-    @property
-    def prev_book_pk(self):
-        prev_book_pk = self.book_id - 1
-        if prev_book_pk > 0:
-            return prev_book_pk
-        return None
-    
-    @property
     def next_book(self):
-        if self.next_book_pk:
-            return self.bible[self.next_book_pk]
-        return None
+        " Returns a Book object or None. "
+        return self.book.next
     
     @property
     def prev_book(self):
-        if self.prev_book_pk:
-            return self.bible[self.prev_book_pk]
-        return None
+        " Returns a Book object or None. "
+        return self.book.prev
 

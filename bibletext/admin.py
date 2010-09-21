@@ -41,8 +41,8 @@ class ScriptureInline(generic.GenericTabularInline):
 
 class ScriptureAdmin(admin.ModelAdmin):
     list_display = ('start_verse', 'end_verse', 'version', 'start_book', 'end_book')
-    list_filter = ('version', 'start_book')
+    list_filter = ('version', 'start_book_id')
     fields = ('start_verse', 'end_verse', 'version')
     form = ScriptureForm
 
-admin.site.register(Scripture, ScriptureAdmin)
+#admin.site.register(Scripture, ScriptureAdmin)

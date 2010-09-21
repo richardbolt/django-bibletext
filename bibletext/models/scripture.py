@@ -23,13 +23,13 @@ class Scripture(models.Model):
     content_object = generic.GenericForeignKey("content_type", "object_id")
     
     # Auto-generated fields for sorting, filtering, etc:
-    #start_book = models.ForeignKey(Book, related_name='start_scriptures')
-    start_chapter = models.PositiveIntegerField()
-    start_verse_number = models.PositiveIntegerField()
+    start_book_id = models.PositiveIntegerField()
+    start_chapter_id = models.PositiveIntegerField()
+    start_verse_id = models.PositiveIntegerField()
     
-    #end_book = models.ForeignKey(Book, related_name='end_scriptures', blank=True, null=True)
-    end_chapter = models.PositiveIntegerField(blank=True, null=True)
-    end_verse_number = models.PositiveIntegerField(blank=True, null=True)
+    end_book_id = models.PositiveIntegerField(blank=True, null=True)
+    end_chapter_id = models.PositiveIntegerField(blank=True, null=True)
+    end_verse_id = models.PositiveIntegerField(blank=True, null=True)
     
     def __unicode__(self):
         if self.end_verse:
@@ -38,7 +38,15 @@ class Scripture(models.Model):
         
     class Meta:
         app_label = 'bibletext'
-        ordering = ('start_book', 'start_chapter', 'start_verse_number')
+        ordering = ('start_book_id', 'start_chapter_id', 'start_verse_id')
+    
+    @property
+    def start_book(self):
+        self.version.bible[self.start_book_id]
+    
+    @property
+    def end_book(self):
+        self.version.bible[self.end_book_id]
     
     def get_passage(self):
         return self.version.model_class().objects.passage(self.start_verse, self.end_verse)    
@@ -52,15 +60,15 @@ class Scripture(models.Model):
 
 def populate_scripture_details(sender, instance, **kwargs):
     start = bible.Verse(instance.start_verse)
-    instance.start_book = Book.objects.get(pk=start.book)
-    instance.start_chapter = start.chapter
-    instance.start_verse_number = start.verse
+    instance.start_book_id = start.book_id
+    instance.start_chapter_id = start.chapter_id
+    instance.start_verse_id = start.verse_id
     if instance.end_verse:
         end = bible.Verse(instance.end_verse)
         if start.book == end.book:
-            instance.end_book = instance.start_book
+            instance.end_book_id = instance.start_book_id
         else:
-            instance.end_book = Book.objects.get(pk=end.book)
-        instance.end_chapter = end.chapter
-        instance.end_verse_number = end.verse
+            instance.end_book_id = end.book.number
+        instance.end_chapter_id = end.chapter_id
+        instance.end_verse_id = end.verse_id
 pre_save.connect(populate_scripture_details, sender=Scripture)
