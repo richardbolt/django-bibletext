@@ -27,7 +27,7 @@ def books(bible=KJV):
     
     """
     return {
-        'books' : bible,
+        'books' : bible.bible, # Iteration gives the books: {% for book in books %}
     }
 
 @register.inclusion_tag('bibletext/chapters.html')

@@ -89,7 +89,11 @@ class Bible(BibleBase):
     def __len__(self):
         " Returns the number of books (66) in this Bible. "
         return self.num_books
-
+    
+    def _get_element(self, i):
+        assert 0 <= i < len(self)
+        return self._books[i]
+    
     def __getitem__(self, key):
         " Get a specific book of the bible. NB: Slices and negative indexes are supported. "
         if not isinstance(key, (slice, int, long)):

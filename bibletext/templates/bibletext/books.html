@@ -1,5 +1,5 @@
 <ul class="bibletext-books">
 {% for book in books %}
-    <li id="bibletext-book-{{ book.pk }}">{{ book }}</li>
+    <li id="bibletext-book-{{ book.number }}">{{ book.name }}</li>
 {% endfor %}
 </ul>
