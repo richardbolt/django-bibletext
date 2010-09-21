@@ -450,15 +450,15 @@ class VerseText(models.Model):
         return ('bibletext_verse_detail', (), {
             'version':self.translation,
             'book_id': self.book.number,
-            'chapter': self.chapter,
-            'verse': self.verse})
+            'chapter_id': self.chapter.number,
+            'verse_id': self.verse.number})
     
     @models.permalink
     def get_chapter_url(self):
         return ('bibletext_chapter_detail', (), {
             'version':self.translation,
             'book_id': self.book.number,
-            'chapter': self.chapter})
+            'chapter_id': self.chapter.number})
     
     #---------------------
     # Next/Previous Verses
@@ -509,11 +509,9 @@ class VerseText(models.Model):
             return self._prev_chapter
         if self.book_id == 1 and self.chapter_id == 1: # Nothing before Genesis 1...
             return None
-        
-        book_data = bible.data.bible_data(self.translation)[self.book_id-1] # NB: data is 0 indexed.
-        
+                
         if self.chapter_id - 1 <= 0: # We'll be in the previous book.
-            chapter_id = self.bible[self.book-1][-1].number
+            chapter_id = len(self.bible[self.book-1][-1])
             self._prev_chapter = self.__class__.objects.get(book_id=self.prev_book_pk, chapter_id=chapter_id, verse_id=1)
         else:
             self.book[self.chapter-1] # Previous chapter in the same book...
