@@ -11,7 +11,7 @@ register = template.Library()
 @register.inclusion_tag('bibletext/books.html')
 def books(bible=KJV):
     """
-    Renders all the books from :model:`bibletext.Book`
+    Renders all the books from :model:`bibletext.KJV`
     
     Uses :template:`bibletext/books.html` to render the books.
     You override this template.
@@ -27,7 +27,7 @@ def books(bible=KJV):
     
     """
     return {
-        'books' : bible.books.objects.all(),
+        'books' : bible,
     }
 
 @register.inclusion_tag('bibletext/chapters.html')
@@ -41,8 +41,8 @@ def chapters(book, bible=KJV):
     
     @args
         
-        ``book``: The :model:`bibletext.Book` to list chapters from.
-        Note: You can also use an integer book number, or a book name.
+        ``book``: The book to list chapters from.
+        Note: You can use an integer book number, or a book name.
         
         ``bible``: The model object of the translation you want to list chapters from.
         Defaults to the :model:`bibletext.KJV` text.
@@ -55,7 +55,7 @@ def chapters(book, bible=KJV):
     if type(book) is int:
         if book > 0 and book <= 66:
             # 66 Books in the Bible.
-            book = bible.books.objects.get(pk=book)
+            book = bible.bible[book]
         else:
             
             # We can't find the given book in the Bible.
@@ -78,5 +78,5 @@ def chapters(book, bible=KJV):
     
     return {
         'book': book,
-        'chapters' : bible.objects.filter(book=book).values('chapter').annotate(Count('verse'))
+        'chapters' : bible.objects.filter(book_id=book.book).values('chapter_id').annotate(Count('verse_id'))
     }

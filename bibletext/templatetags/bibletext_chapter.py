@@ -36,7 +36,7 @@ def chapter(book, chapter=1, bible=KJV):
     if type(book) is int:
         if book > 0 and book <= 66:
             # 66 Books in the Bible.
-            book = bible.books.objects.get(pk=book)
+            book = bible.bible[book]
         else:
             
             # We can't find the given book in the Bible.
@@ -62,7 +62,7 @@ def chapter(book, chapter=1, bible=KJV):
             }
     
     try:
-        verse_list = bible.objects.filter(book=book, chapter=int(chapter))
+        verse_list = bible.objects.filter(book_id=book.book, chapter_id=int(chapter))
     except bible.DoesNotExist:
         verse_list = bible.objects.none()
     

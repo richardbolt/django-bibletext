@@ -5,7 +5,8 @@ from django.db.models.signals import pre_save
 
 import bible # python-bible module.
 
-from bibles import Book, VerseText, KJV
+from bibles import Book, VerseText
+from kjv import KJV
 from fields import VerseField
 
 
@@ -22,11 +23,11 @@ class Scripture(models.Model):
     content_object = generic.GenericForeignKey("content_type", "object_id")
     
     # Auto-generated fields for sorting, filtering, etc:
-    start_book = models.ForeignKey(Book, related_name='start_scriptures')
+    #start_book = models.ForeignKey(Book, related_name='start_scriptures')
     start_chapter = models.PositiveIntegerField()
     start_verse_number = models.PositiveIntegerField()
     
-    end_book = models.ForeignKey(Book, related_name='end_scriptures', blank=True, null=True)
+    #end_book = models.ForeignKey(Book, related_name='end_scriptures', blank=True, null=True)
     end_chapter = models.PositiveIntegerField(blank=True, null=True)
     end_verse_number = models.PositiveIntegerField(blank=True, null=True)
     

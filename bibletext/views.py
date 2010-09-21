@@ -12,7 +12,7 @@ from models import Scripture, KJV
 from utils import lookup_translation
 
 
-def chapter(request, book_id, chapter, version=KJV, template_name=None,
+def chapter(request, book_id, chapter_id, version=KJV, template_name=None,
         template_loader=loader, extra_context=None, context_processors=None,
         template_object_name='verse_list', mimetype=None):
     """
@@ -22,7 +22,7 @@ def chapter(request, book_id, chapter, version=KJV, template_name=None,
         
         `book_id`: (int) Pk of the Book to be used.
         
-        `chapter`: (int) The chapter to render.
+        `chapter_id`: (int) The chapter to render.
         
         `version`: The Bible version to be used. You can use either the actual object or a string
         representing the translation attribute (eg: KJV or 'KJV')
@@ -38,11 +38,10 @@ def chapter(request, book_id, chapter, version=KJV, template_name=None,
     else:
         bible = version # Perhaps we were sent a VerseText implementation like the KJV.
     
-    book = bible.books.objects.get(pk=book_id)
-    
     try:
-        verse_list = bible.objects.filter(book__pk=book_id, chapter=chapter)
-    except bible.DoesNotExist:
+        chapter = bible.bible[book_id][chapter_id]
+        verse_list = bible.objects.filter(book_id=book_id, chapter_id=chapter_id)
+    except (IndexError, bible.DoesNotExist):
         raise Http404("Chapter not found in the given book of %s." % bible.translation)
     
     if not template_name:
@@ -50,7 +49,7 @@ def chapter(request, book_id, chapter, version=KJV, template_name=None,
     t = template_loader.get_template(template_name)
     c = RequestContext(request, {
         template_object_name: verse_list,
-        'book': book,
+        'book': chapter.book,
         'chapter': chapter,
         'bible': bible,
     }, context_processors)
@@ -62,7 +61,7 @@ def chapter(request, book_id, chapter, version=KJV, template_name=None,
     return HttpResponse(t.render(c), mimetype=mimetype)
 
 
-def verse(request, book_id, chapter, verse, version=KJV, template_name=None,
+def verse(request, book_id, chapter_id, verse_id, version=KJV, template_name=None,
         template_loader=loader, extra_context=None, context_processors=None,
         template_object_name='verse', mimetype=None):
     """
@@ -86,17 +85,16 @@ def verse(request, book_id, chapter, verse, version=KJV, template_name=None,
         bible = lookup_translation(version)
     else:
         bible = version # Perhaps we were sent a VerseText implementation like the KJV.
-
-    book = bible.books.objects.get(pk=book_id)
-    verse = get_object_or_404(bible, book__pk=book_id, chapter=chapter, verse=verse)
+    
+    verse = get_object_or_404(bible, book_id=book_id, chapter_id=chapter, verse_id=verse)
 
     if not template_name:
         template_name = "bibletext/verse_detail.html"
     t = template_loader.get_template(template_name)
     c = RequestContext(request, {
         template_object_name: verse,
-        'book': book,
-        'chapter': chapter,
+        'book': verse.book,
+        'chapter': verse.chapter,
         'bible': bible,
     }, context_processors)
     for key, value in extra_context.items():

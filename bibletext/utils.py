@@ -36,8 +36,8 @@ def find_book(book, bible=KJV):
                     found = i + 1
                     break
     try:
-        return bible.books.objects.get(pk=found)
-    except bible.books.ObjectDoesNotExist:
+        return bible.bible[found]
+    except:
         raise BookError("Could not find that book of the Bible: %d." % book)
 
 
