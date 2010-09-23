@@ -3,12 +3,18 @@
 {% block content %}
 
 <div class="bibletext-chapter">
-<h4 class="bibletext-reference">{{ book }} <a href="{{ verse.get_chapter_url }}">{{ chapter }}</a>:{{ verse.verse }}{% if bible.translation != 'KJV' %} ({{ bible.translation }}){% endif %}</h4>
+
+<h4 class="bibletext-reference">{% if not chapter.book.has_one_chapter %}
+{{ book }} <a href="{{ verse.get_chapter_url }}">{{ chapter.number }}</a>:{{ verse.verse.number }}
+{% else %}
+<a href="{{ verse.get_chapter_url }}">{{ book }}</a> {{ verse.verse.number }}
+{% endif %}{% if bible.translation != 'KJV' %} ({{ bible.translation }}){% endif %}
+</h4>
 {% include "bibletext/_verse.html" %}
 
 <p class="bibletext-next-prev">
-{% if verse.prev_verse %}<a class="bibletext-prev" href="{{ verse.prev_verse.get_absolute_url }}">&laquo; {{ verse.prev_verse }}</a>{% endif %}
-{% if verse.next_verse %}<a class="bibletext-next" href="{{ verse.next_verse.get_absolute_url }}">{{ verse.next_verse }} &raquo;</a>{% endif %}
+{% if verse.verse.prev %}<a class="bibletext-prev" href="{{ verse.verse.prev.get_absolute_url }}">&laquo; {{ verse.verse.prev }}</a>{% endif %}
+{% if verse.verse.next %}<a class="bibletext-next" href="{{ verse.verse.next.get_absolute_url }}">{{ verse.verse.next }} &raquo;</a>{% endif %}
 </p>
 </div>
 

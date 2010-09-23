@@ -188,6 +188,10 @@ class Book(BibleBase):
         return len(self._chapters)
     
     @property
+    def has_one_chapter(self):
+        return True if len(self) == 1 else False
+    
+    @property
     def num_verses(self):
         num = 0
         for chapter in self[:len(self)]:
@@ -265,7 +269,7 @@ class Chapter(BibleBase):
 
     """
     def __init__(self, book, number, verses, omissions=None, chapter_text=None):
-        
+        self.bible = book.bible
         self.book = book # Needs to know the book we're in for comparators to operate.
         self.number = number # int(chapter number)
         if chapter_text:
@@ -374,15 +378,36 @@ class Verse(BibleBase):
 
     """
     def __init__(self, chapter, number):
+        self.bible = chapter.book.bible
+        self.book = chapter.book
         self.chapter = chapter
         self.number = number
-        if len(self.chapter.book) > 1:
+        if len(self.book) > 1:
             self.name = u'%s:%s' % (self.chapter.number, self.number)
         else: # Books with one chapter.
             self.name = unicode(self.number)
     
     def __unicode__(self):
-        return u'%s %s' % (self.chapter.book, self.name)
+        if self.book.has_one_chapter:
+            return u'%s %s' % (self.chapter, self.name)
+        
+        return u'%s:%s' % (self.chapter, self.name)
+    
+    @property
+    def next(self):
+        " Next verse (can be from a different chapter and book). "
+        if self.number < len(self.chapter):
+            return self.chapter[self.number+1]
+        else: # Next chapter, verse 1.
+            return self.chapter.next[1]
+    
+    @property
+    def prev(self):
+        " Previous verse (can be from a different chapter and book). "
+        if self.number > 1:
+            return self.chapter[self.number-1]
+        else: # Previous chapter, last verse.
+            return self.chapter.prev[-1]
     
     @models.permalink
     def get_absolute_url(self):
