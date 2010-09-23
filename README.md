@@ -15,8 +15,7 @@ Dependencies
 
 Uses [python-bible](http://github.com/jasford/python-bible) for
 computing and handling the verse and passage lookups. You will need that
-on your path somewhere - note that you'll need to use this fork currently
-until the original python-bible implementation is fixed: [python-bible](http://github.com/richardbolt/python-bible)
+on your path somewhere. This dependency will possibly be removed in the future.
 
 Installation
 ------------
