@@ -402,7 +402,7 @@ class BiblePassageManager(models.Manager):
         if self.model.translation and reference[-3] != self.model.translation:
             reference += ' '+self.model.translation
         verse = bible.Verse(reference)
-        return self.get_query_set().get(book_id=verse.book.number, chapter_id=verse.chapter.number, verse_id=verse.number)
+        return self.get_query_set().get(book_id=verse.book, chapter_id=verse.chapter, verse_id=verse.verse)
     
     def passage(self, start_reference, end_reference=None):
         """

@@ -62,7 +62,7 @@ def chapter(book, chapter=1, bible=KJV):
             }
     
     try:
-        verse_list = bible.objects.filter(book_id=book.book, chapter_id=int(chapter))
+        verse_list = bible.objects.filter(book_id=book.number, chapter_id=int(chapter))
     except bible.DoesNotExist:
         verse_list = bible.objects.none()
     
@@ -70,5 +70,5 @@ def chapter(book, chapter=1, bible=KJV):
         'bible': bible,
         'book': book,
         'chapter': chapter,
-        'verse_list' : bible.objects.filter(book=book, chapter=chapter)
+        'verse_list' : bible.objects.filter(book_id=book.number, chapter_id=int(chapter))
     }

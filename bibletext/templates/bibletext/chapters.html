@@ -1,5 +1,5 @@
 <ul class="bibletext-chapters">
 {% for chapter in chapters %}
-    <li id="bibletext-book-{{ book.pk }}-chapter-{{ chapter.chapter }}">{{ chapter.chapter }} ({{ chapter.verse__count }} verses)</li>
+    <li id="bibletext-book-{{ book.number }}-chapter-{{ chapter.chapter_id }}">{{ chapter.chapter_id }} ({{ chapter.num_verses }} verses)</li>
 {% endfor %}
 </ul>

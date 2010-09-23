@@ -78,5 +78,5 @@ def chapters(book, bible=KJV):
     
     return {
         'book': book,
-        'chapters' : bible.objects.filter(book_id=book.book).values('chapter_id').annotate(Count('verse_id'))
+        'chapters' : bible.objects.filter(book_id=book.number).values('chapter_id').annotate(num_verses=Count('verse_id'))
     }
