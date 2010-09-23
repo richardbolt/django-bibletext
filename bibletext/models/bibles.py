@@ -163,7 +163,7 @@ class Book(BibleBase):
 
         """
         self.bible = bible
-        self.textament = testament
+        self.testament = testament
         self.number = number # int(book number)
         self.name = name
         self.abbreviations = abbreviations
@@ -332,6 +332,13 @@ class Chapter(BibleBase):
         else: # Previous book, last chapter.
             return self.book.prev[-1]
     
+    @models.permalink
+    def get_absolute_url(self):
+        return ('bibletext_chapter_detail', (), {
+            'version': self.book.bible.translation,
+            'book_id': self.book.number,
+            'chapter_id': self.number})
+    
     def __eq__(self, other):
         if type(self) == type(other):
             return (self.book, self.number) == (other.book, other.number)
@@ -376,6 +383,14 @@ class Verse(BibleBase):
     
     def __unicode__(self):
         return u'%s %s' % (self.chapter.book, self.name)
+    
+    @models.permalink
+    def get_absolute_url(self):
+        return ('bibletext_verse_detail', (), {
+            'version':self.book.bible.translation,
+            'book_id': self.book.number,
+            'chapter_id': self.chapter.number,
+            'verse_id': self.number})
     
     def __eq__(self, other):
         if type(self) == type(other):

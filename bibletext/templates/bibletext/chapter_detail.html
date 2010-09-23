@@ -10,8 +10,8 @@
 {% endfor %}
 
 <p class="bibletext-next-prev">
-{% if verse_list.0.prev_chapter %}<a href="{{ verse_list.0.prev_chapter.get_chapter_url }}">&laquo; {{ verse_list.0.prev_chapter.book }} {{ verse_list.0.prev_chapter.chapter.name }}</a>{% endif %}
-{% if verse_list.0.next_chapter %}<a href="{{ verse_list.0.next_chapter.get_chapter_url }}">{{ verse_list.0.next_chapter.book }} {{ verse_list.0.next_chapter.chapter.name }} &raquo;</a>{% endif %}
+{% if chapter.prev %}<a href="{{ chapter.prev.get_absolute_url }}">&laquo; {{ chapter.prev }}</a>{% endif %}
+{% if chapter.next %}<a href="{{ chapter.next.get_absolute_url }}">{{ chapter.next }} &raquo;</a>{% endif %}
 </p>
 </div>
 
