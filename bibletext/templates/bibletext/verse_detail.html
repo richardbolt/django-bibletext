@@ -5,7 +5,7 @@
 <div class="bibletext-chapter">
 
 <h4 class="bibletext-reference">{% if not chapter.book.has_one_chapter %}
-{{ book }} <a href="{{ verse.get_chapter_url }}">{{ chapter.number }}</a>:{{ verse.verse.number }}
+<a href="{{ book.get_absolute_url }}">{{ book }}</a> <a href="{{ verse.get_chapter_url }}">{{ chapter.number }}</a>:{{ verse.verse.number }}
 {% else %}
 <a href="{{ verse.get_chapter_url }}">{{ book }}</a> {{ verse.verse.number }}
 {% endif %}{% if bible.translation != 'KJV' %} ({{ bible.translation }}){% endif %}

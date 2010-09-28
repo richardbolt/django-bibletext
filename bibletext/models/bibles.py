@@ -41,14 +41,15 @@ class BibleBase(object):
 
 class Bible(BibleBase):
     " Represents a Bible (version/translation.) "
-    def __init__(self, name, translation, book_data=None):
+    def __init__(self, name, translation, book_data=None, language='English'):
         self.name = name
         self.translation = translation # Letter code, eg: 'KJV'
         self._books = [] # Populate with self._set_books(book_data)
 
         if book_data:
             self.set_books(book_data)
-
+        
+        self.language = language
         # Other natively supported parameters: TODO.
         self._introduction = None   # Use Markdown
         self._preface = None        # Use Markdown
@@ -68,6 +69,7 @@ class Bible(BibleBase):
                     'name': '1 Peter',
                     'abbrs': ['1pet', '1p', '1pe', '1 pe', '1pt', '1pe', '1 pet', '1 pt', '1 pe'],
                     'altname': 'The First Epistle General of Peter',
+                    'shortname': '', # Used to shorten 'St. John' to 'John'; defaults to 'name'.
                 },...]
 
         """
@@ -89,6 +91,13 @@ class Bible(BibleBase):
     def __len__(self):
         " Returns the number of books (66) in this Bible. "
         return self.num_books
+    
+    @property
+    def num_verses(self):
+        num = 0
+        for book in self:
+            num += book.num_verses
+        return num
     
     def _get_element(self, i):
         assert 0 <= i < len(self)
@@ -115,7 +124,28 @@ class Bible(BibleBase):
             return self._books[key]
         else:
             raise IndexError
-
+    
+    @models.permalink
+    def get_absolute_url(self):
+        return ('bibletext_bible_detail', (), {
+            'version': self.translation})
+    
+    def list_old_testament_books(self):
+        l = []
+        for book in self:
+            if book.testament == 'OT':
+                l.append(book)
+            else:
+                break
+        return l
+    
+    def list_new_testament_books(self):
+        l = []
+        for book in self:
+            if book.testament == 'NT':
+                l.append(book)
+        return l
+    
     def __eq__(self, other):
         if type(self) == type(other):
             return self.translation == other.translation
@@ -139,7 +169,7 @@ class Bible(BibleBase):
 class Book(BibleBase):
     " Book object. Represents a book of the Bible. "
     def __init__(self, bible=None, testament=None, number=None, name=None, abbreviations=None, verse_counts=None,
-                omissions=None, altname=None, chapter_text=None):
+                omissions=None, altname=None, shortname=None, chapter_text=None):
         """
         Book __init__.
 
@@ -158,6 +188,8 @@ class Book(BibleBase):
             `verse_counts`: (6, 10, ... ) list of list of verse counts (per chapter), all integers.
 
             `altname`: A long form name of this book. eg: "The gospel according to St John". Defaults to None.
+            
+            `shortname`: Used to shorten 'St. John' to 'John'; defaults to 'name'.
 
             `omissions`: {12: [4,6,9, ...], ... } A mapping of chapter to lists of verse numbers that are omitted.
 
@@ -165,7 +197,8 @@ class Book(BibleBase):
         self.bible = bible
         self.testament = testament
         self.number = number # int(book number)
-        self.name = name
+        self.name = name            
+        self.shortname = self.name if not shortname else shortname
         self.abbreviations = abbreviations
         self._chapters = []
         chapter_num = 1
@@ -194,7 +227,7 @@ class Book(BibleBase):
     @property
     def num_verses(self):
         num = 0
-        for chapter in self[:len(self)]:
+        for chapter in self:
             num += len(chapter)
         return num
     
@@ -239,6 +272,12 @@ class Book(BibleBase):
             return self.bible[self.number-1]
         
         return None
+    
+    @models.permalink
+    def get_absolute_url(self):
+        return ('bibletext_book_detail', (), {
+            'version': self.bible.translation,
+            'book_id': self.number})
     
     def __eq__(self, other):
         if type(self) == type(other):
@@ -286,9 +325,9 @@ class Chapter(BibleBase):
 
     def __unicode__(self):
         if len(self.book) == 1: # Only one chapter to the book, omit the chapter.
-            return self.book.__unicode__()
+            return self.book.shortname
 
-        return u'%s %s' % (self.book, self.number)
+        return u'%s %s' % (self.book.shortname, self.number)
 
     def __len__(self):
         " Return the number of verses. "
@@ -389,9 +428,9 @@ class Verse(BibleBase):
     
     def __unicode__(self):
         if self.book.has_one_chapter:
-            return u'%s %s' % (self.chapter, self.name)
+            return u'%s %s' % (self.chapter, self.number)
         
-        return u'%s:%s' % (self.chapter, self.name)
+        return u'%s:%s' % (self.chapter, self.number)
     
     @property
     def next(self):

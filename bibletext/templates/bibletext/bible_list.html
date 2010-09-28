@@ -1,0 +1,18 @@
+{% extends "bibletext/base.html" %}
+
+{% block content %}
+
+<div class="bibletext-book">
+
+<h1>Available Bibles</h1>
+
+<ul class="bibletext-bible-list">
+{% for bible in bible_list %}
+    <li><a href="{{ bible.get_absolute_url }}">{{ bible.name }} ({{ bible.translation }}) - {{ bible.language }}</a></li>
+{% endfor %}
+</ul>
+
+
+</div>
+
+{% endblock %}

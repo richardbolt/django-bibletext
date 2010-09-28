@@ -1,0 +1,27 @@
+{% extends "bibletext/base.html" %}
+
+{% block content %}
+
+<div class="bibletext-book">
+
+<h1>{{ bible.name }}</h1>
+
+<h1 class="bibletext-testament-list-title">The Names and Order of all the Books of the Old and New Testament</h1>
+
+<h2 class="bibletext-testament-title">The Books of the Old Testament</h2>
+<ul class="bibletext-bible-book-list">
+{% for book in bible.list_old_testament_books %}
+    <li class="bibletext-book-title"><a href="{{ book.get_absolute_url }}">{{ book.shortname }}</a></li>
+{% endfor %}
+</ul>
+
+<h2 class="bibletext-testament-title">The Books of the New Testament</h2>
+<ul class="bibletext-bible-book-list">
+{% for book in bible.list_new_testament_books %}
+    <li><a href="{{ book.get_absolute_url }}">{{ book.shortname }}</a></li>
+{% endfor %}
+</ul>
+
+</div>
+
+{% endblock %}

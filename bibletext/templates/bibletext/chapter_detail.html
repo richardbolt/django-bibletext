@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="bibletext-chapter">
-<h1 class="bibletext-book-title">{% if chapter.number = 1 and book.altname %}{{ book.altname }}{% else %}{{ book }}{% endif %}</h1>
+<h1 class="bibletext-book-title"><a href="{{ book.get_absolute_url }}">{% if chapter.number = 1 and book.altname %}{{ book.altname }}{% else %}{{ book }}{% endif %}</a></h1>
 {% if not chapter.book.has_one_chapter %}<h4 class="bibletext-reference">{{ chapter.name }}{% if bible.translation != 'KJV' %} ({{ bible.translation }}){% endif %}</h4>{% endif %}
 {% for verse in verse_list %}
 {% include "bibletext/_verse.html" %}

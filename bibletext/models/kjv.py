@@ -282,6 +282,7 @@ base_bible_data = [
         'name': 'St. Matthew',
         'abbreviations': ['matthew', 'mat', 'matt', 'mt'],
         'altname': 'The Gospel According to St. Matthew',
+        'shortname': 'Matthew',
     },
     {
         'testament': 'NT',
@@ -289,6 +290,7 @@ base_bible_data = [
         'name': 'St. Mark',
         'abbreviations': ['mark', 'mar', 'mk'],
         'altname': 'The Gospel According to St. Mark',
+        'shortname': 'Mark',
     },
     {
         'testament': 'NT',
@@ -296,6 +298,7 @@ base_bible_data = [
         'name': 'St. Luke',
         'abbreviations': ['luke', 'lu', 'luk', 'lk'],
         'altname': 'The Gospel According to St. Luke',
+        'shortname': 'Luke',
     },
     {
         'testament': 'NT',
@@ -303,6 +306,7 @@ base_bible_data = [
         'name': 'St. John',
         'abbreviations': ['john', 'jo', 'joh', 'jn'],
         'altname': 'The Gospel According to St. John',
+        'shortname': 'John',
     },
     {
         'testament': 'NT',
