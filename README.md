@@ -8,7 +8,9 @@ to your project.
 
 Included out of the box is the King James Version text as the default version.
 
-This project is in it's early stages...
+This project is in it's early stages, but does already  include a full Bible
+viewer for the KJV text, template tags to use in your templates, and a Scripture
+model to use in your own models.
 
 Dependencies
 ------------
@@ -55,15 +57,15 @@ There are template tags to use:
 
 ### Views and urls ###
 
-The easiest way to include the whole Bible in your website is to add `(r'^bible/', include('bibletext.urls')),` to your **urls.py**.
+The easiest way to include the whole Bible in your website is to add
+`(r'^bible/', include('bibletext.urls')),` to your **urls.py**. This provides an
+easily navigable default KJV Bible, and any versions you add will also show up at
+the root view to navigate to. You can override any of the templates, or specify
+different templates to use by passing `template_name` to the view you wish to change.
 
 You may wish to override **templates/bibletext/base.html** and provide some CSS to make it look nice.
 
-Note: Currently only the whole chapter view and a verse view are included,
-eg: `KJV/43/3/` gives you John 3 from the KJV,
-`KJV/43/3/16/` gives you John 3:16 from the KJV.
-
-More default views and urls forthcoming. Default CSS and standalone templates will also be forthcoming.
+Default CSS and standalone templates will be forthcoming in a classical style.
 
 
 ### Scripture ###
