@@ -1,1 +1,1 @@
-<p><span class="bibletext-verse-number"><a href="{{ verse.get_absolute_url }}">{{ verse.verse.number }}</a></span> {{ verse.text }}</p>
+<p{% if verse.verse.number = 1 %} class="bibletext-first-verse-chapter"{% endif %}>{% if verse.verse.number != 1 %}<span class="bibletext-verse-number"><a href="{{ verse.get_absolute_url }}">{{ verse.verse.number }}</a></span> {% endif %}{{ verse.text }}</p>

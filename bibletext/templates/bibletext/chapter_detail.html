@@ -5,14 +5,10 @@
 <div class="bibletext-chapter">
 <h1 class="bibletext-book-title"><a href="{{ book.get_absolute_url }}">{% if chapter.number = 1 and book.altname %}{{ book.altname }}{% else %}{{ book }}{% endif %}</a></h1>
 {% if not chapter.book.has_one_chapter %}<h4 class="bibletext-reference">{{ chapter.name }}{% if bible.translation != 'KJV' %} ({{ bible.translation }}){% endif %}</h4>{% endif %}
-{% for verse in verse_list %}
-{% include "bibletext/_verse.html" %}
-{% endfor %}
 
-<p class="bibletext-next-prev">
-{% if chapter.prev %}<a href="{{ chapter.prev.get_absolute_url }}">&laquo; {{ chapter.prev }}</a>{% endif %}
-{% if chapter.next %}<a href="{{ chapter.next.get_absolute_url }}">{{ chapter.next }} &raquo;</a>{% endif %}
-</p>
+{% include "bibletext/_verse_list.html" %}
+
+{% include "bibletext/_next_prev_chapter.html" %}
 </div>
 
 {% endblock %}

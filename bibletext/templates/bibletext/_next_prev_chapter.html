@@ -1,0 +1,4 @@
+<p class="bibletext-next-prev">
+{% if chapter.prev %}<a href="{{ chapter.prev.get_absolute_url }}" class="bibletext-prev">&laquo; {{ chapter.prev }}</a>{% endif %}
+{% if chapter.next %}<a href="{{ chapter.next.get_absolute_url }}" class="bibletext-next">{{ chapter.next }} &raquo;</a>{% endif %}
+</p>

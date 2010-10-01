@@ -5,25 +5,22 @@
 <div class="bibletext-book">
 
 <p class="bibletext-book-next-prev">
-{% if book.prev %}<a href="{{ book.prev.get_absolute_url }}">&laquo; {{ book.prev }}</a>{% endif %}
-{% if book.next %}<a href="{{ book.next.get_absolute_url }}">{{ book.next }} &raquo;</a>{% endif %}
+{% if book.prev %}<a href="{{ book.prev.get_absolute_url }}" class="bibletext-prev">&laquo; {{ book.prev }}</a>{% endif %}
+{% if book.next %}<a href="{{ book.next.get_absolute_url }}" class="bibletext-next">{{ book.next }} &raquo;</a>{% endif %}
 </p>
 
-<h1 class="bibletext-book-title">{% if chapter.number = 1 and book.altname %}{{ book.altname }}{% else %}{{ book }}{% endif %}</h1>
+<h1 class="bibletext-book-detail-title">{% if chapter.number = 1 and book.altname %}{{ book.altname }}{% else %}{{ book }}{% endif %}</h1>
 
-{% if not book.has_one_chapter %}<ul>
+{% if not book.has_one_chapter %}<ul class="bibletext-chapter-links">
 {% for chapter in book %}<li class="bibletext-chapter-link"><a href="{{ chapter.get_absolute_url }}">{{ chapter.number }}</a></li>{% endfor %}
 {% endif %}
+</ul>
 
 {% if not chapter.book.has_one_chapter %}<h4 class="bibletext-reference">{{ chapter.name }}{% if bible.translation != 'KJV' %} ({{ bible.translation }}){% endif %}</h4>{% endif %}
-{% for verse in verse_list %}
-{% include "bibletext/_verse.html" %}
-{% endfor %}
 
-<p class="bibletext-next-prev">
-{% if chapter.prev %}<a href="{{ chapter.prev.get_absolute_url }}">&laquo; {{ chapter.prev }}</a>{% endif %}
-{% if chapter.next %}<a href="{{ chapter.next.get_absolute_url }}">{{ chapter.next }} &raquo;</a>{% endif %}
-</p>
+{% include "bibletext/_verse_list.html" %}
+
+{% include "bibletext/_next_prev_chapter.html" %}
 </div>
 
 {% endblock %}
