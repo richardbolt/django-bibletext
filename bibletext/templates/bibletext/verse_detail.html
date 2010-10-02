@@ -2,7 +2,8 @@
 
 {% block content %}
 
-<div class="bibletext-chapter">
+<div class="bibletext-wrapper">
+<h2><a href="{{ book.bible.get_absolute_url }}">{{ book.bible.name }}</a></h2>
 
 <h4 class="bibletext-reference">{% if not chapter.book.has_one_chapter %}
 <a href="{{ book.get_absolute_url }}">{{ book }}</a> <a href="{{ verse.get_chapter_url }}">{{ chapter.number }}</a>:{{ verse.verse.number }}

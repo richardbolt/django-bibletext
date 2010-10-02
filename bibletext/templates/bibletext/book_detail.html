@@ -2,7 +2,8 @@
 
 {% block content %}
 
-<div class="bibletext-book">
+<div class="bibletext-wrapper">
+<h2><a href="{{ book.bible.get_absolute_url }}">{{ book.bible.name }}</a></h2>
 
 <p class="bibletext-book-next-prev">
 {% if book.prev %}<a href="{{ book.prev.get_absolute_url }}" class="bibletext-prev">&laquo; {{ book.prev }}</a>{% endif %}

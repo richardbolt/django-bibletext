@@ -2,7 +2,9 @@
 
 {% block content %}
 
-<div class="bibletext-chapter">
+<div class="bibletext-wrapper">
+<h2><a href="{{ book.bible.get_absolute_url }}">{{ book.bible.name }}</a></h2>
+
 <h1 class="bibletext-book-title"><a href="{{ book.get_absolute_url }}">{% if chapter.number = 1 and book.altname %}{{ book.altname }}{% else %}{{ book }}{% endif %}</a></h1>
 {% if not chapter.book.has_one_chapter %}<h4 class="bibletext-reference">{{ chapter.name }}{% if bible.translation != 'KJV' %} ({{ bible.translation }}){% endif %}</h4>{% endif %}
 
