@@ -41,15 +41,20 @@ class BibleBase(object):
 
 class Bible(BibleBase):
     " Represents a Bible (version/translation.) "
-    def __init__(self, name, translation, book_data=None, language='English'):
+    def __init__(self, name, translation, book_data=None, language='English',
+                chapter_text='Chapter %d', psalm_text='Psalm %d'):
         self.name = name
         self.translation = translation # Letter code, eg: 'KJV'
         self._books = [] # Populate with self._set_books(book_data)
-
+        
+        self._chapter_text = chapter_text
+        self._psalm_text = psalm_text
+        
         if book_data:
             self.set_books(book_data)
         
         self.language = language
+        
         # Other natively supported parameters: TODO.
         self._introduction = None   # Use Markdown
         self._preface = None        # Use Markdown
@@ -314,9 +319,9 @@ class Chapter(BibleBase):
         if chapter_text:
             self.chapter_text = chapter_text
         elif self.book.number == 19: # Psalms are Psalms, not Chapters.
-            self.chapter_text = _('Psalm %d')
+            self.chapter_text = self.bible._psalm_text
         else:
-            self.chapter_text = _('Chapter %d')
+            self.chapter_text = self.bible._chapter_text
         self.name = self.chapter_text % self.number
         self._verses = []
         for verse in verses:

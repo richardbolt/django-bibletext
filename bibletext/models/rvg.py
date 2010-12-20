@@ -478,7 +478,10 @@ class RVG(VerseText):
     " Implements the VerseText abstract model for the Reina Valera Gómez (RVG) text. "
     
     translation = 'RVG'
-    bible = Bible('Reina Valera Gómez', 'RVG', book_data=base_bible_data, language=u'Español')
+    
+    # Chapter is 'Capítulo', Psalm is 'Salmo' en Español.
+    bible = Bible('Reina Valera Gómez', 'RVG', book_data=base_bible_data, language=u'Español',
+                  chapter_text='Capítulo %d', psalm_text='Salmo %d')
     
     
     class Meta:
