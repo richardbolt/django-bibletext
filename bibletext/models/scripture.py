@@ -60,15 +60,15 @@ class Scripture(models.Model):
 
 def populate_scripture_details(sender, instance, **kwargs):
     start = bible.Verse(instance.start_verse)
-    instance.start_book_id = start.book_id
-    instance.start_chapter_id = start.chapter_id
-    instance.start_verse_id = start.verse_id
+    instance.start_book_id = start.book
+    instance.start_chapter_id = start.chapter
+    instance.start_verse_id = start.verse
     if instance.end_verse:
         end = bible.Verse(instance.end_verse)
         if start.book == end.book:
             instance.end_book_id = instance.start_book_id
         else:
-            instance.end_book_id = end.book.number
-        instance.end_chapter_id = end.chapter_id
-        instance.end_verse_id = end.verse_id
+            instance.end_book_id = end.book
+        instance.end_chapter_id = end.chapter
+        instance.end_verse_id = end.verse
 pre_save.connect(populate_scripture_details, sender=Scripture)

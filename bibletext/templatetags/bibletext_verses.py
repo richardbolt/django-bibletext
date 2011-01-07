@@ -56,7 +56,7 @@ def passage(start_reference, end_reference=None, bible=KJV):
         
         {% passage 'John 3:16' 'John 3:18' %}, {% passage 'John 3:16' 'John 3:18' MyTranslation %}
     """
-    if end_reference == None:
+    if end_reference in (None, ''):
         end_reference = start_reference
     verse_list = bible.objects.passage(start_reference, end_reference)
     passage = Passage(start_reference, end_reference) # Call {{ passage.format }} for the scripture reference.
