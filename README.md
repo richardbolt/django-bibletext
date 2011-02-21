@@ -12,6 +12,8 @@ This project is in it's early stages, but does already  include a full Bible
 viewer for the KJV text, template tags to use in your templates, and a Scripture
 model to use in your own models.
 
+You can see it in action [here.](http://westcoastbaptistkjv.org/bible/KJV/)
+
 Dependencies
 ------------
 
