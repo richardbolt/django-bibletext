@@ -1,5 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.utils import DatabaseError
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
 
@@ -552,9 +553,12 @@ class VerseText(models.Model):
             cls.versions = []
         
         for version in versions:
-            version_content_type = ContentType.objects.get_for_model(version)
-            if version_content_type.pk not in cls.versions:
-                cls.versions.append(version_content_type.pk)
+            try:
+                version_content_type = ContentType.objects.get_for_model(version)
+                if version_content_type.pk not in cls.versions:
+                    cls.versions.append(version_content_type.pk)
+            except DatabaseError:
+                pass # We're probably on an initial syncdb, and there are no tables created.
     
     @property
     def book(self):
